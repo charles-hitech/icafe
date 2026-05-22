@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToTenant;
+
+use MongoDB\Laravel\Eloquent\Model;
+
+class Shift extends Model
+{
+    use BelongsToTenant;
+
+    protected $fillable = ['user_id', 'clock_in_at', 'clock_out_at'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}

@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Models;
+
+use App\Traits\BelongsToTenant;
+
+use MongoDB\Laravel\Eloquent\Model;
+
+class CreditTransaction extends Model
+{
+    use BelongsToTenant;
+
+    protected $fillable = [
+        'customer_id',
+        'order_id',
+        'type',
+        'amount',
+        'note',
+    ];
+
+    protected $casts = [
+        'amount' => 'decimal:2',
+    ];
+
+    public function customer()
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function order()
+    {
+        return $this->belongsTo(Order::class);
+    }
+}
