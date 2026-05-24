@@ -104,6 +104,7 @@ export default function Index({ tickets }) {
                                 ))}
                             </tbody>
                         </table>
+                        </div>
                     ) : (
                         <div className="p-12 text-center flex flex-col items-center">
                             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">

@@ -225,6 +225,7 @@ export default function AuthenticatedLayout({ children }) {
                                 <div key={item.name} title={isSidebarCollapsed ? item.name : ''}>
                                     <Link
                                         href={item.href}
+                                        onClick={() => setIsMobileOpen(false)}
                                         className={`group relative flex items-center rounded-xl overflow-hidden outline-none transition-all duration-200 ${
                                             isSidebarCollapsed ? 'justify-center px-3 py-3' : 'space-x-3 px-3 py-2.5'
                                         } ${
@@ -264,6 +265,7 @@ export default function AuthenticatedLayout({ children }) {
                                                 <Link
                                                     key={sub.name}
                                                     href={sub.href}
+                                                    onClick={() => setIsMobileOpen(false)}
                                                     className={`group flex items-center justify-between rounded-lg px-3 py-2 text-sm outline-none transition-colors ${
                                                         sub.active 
                                                         ? 'bg-brand-50 text-brand-700 font-bold' 
