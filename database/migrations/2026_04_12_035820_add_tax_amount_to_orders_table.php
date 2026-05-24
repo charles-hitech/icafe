@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('tax_amount', 12, 2)->default(0)->after('tip_amount');
+            if (!Schema::hasColumn('orders', 'tax_amount')) {
+                $table->decimal('tax_amount', 12, 2)->default(0)->after('tip_amount');
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('tax_amount');
+            if (Schema::hasColumn('orders', 'tax_amount')) {
+                $table->dropColumn('tax_amount');
+            }
         });
     }
 };

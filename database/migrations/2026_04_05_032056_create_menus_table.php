@@ -15,8 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('category')->nullable(); // Legacy column
-            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
             $table->decimal('price', 10, 2);
             $table->decimal('original_price', 10, 2)->nullable();
             $table->decimal('cost_price', 10, 2)->default(0);
@@ -25,8 +23,6 @@ return new class extends Migration
             $table->string('icon_path')->nullable();
             $table->timestamps();
             
-            $table->index('tenant_id');
-            $table->index('category_id');
             $table->index('status');
         });
     }

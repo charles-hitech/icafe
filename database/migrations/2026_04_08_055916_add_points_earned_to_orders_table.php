@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->integer('points_earned')->default(0)->after('grand_total');
+            if (!Schema::hasColumn('orders', 'points_earned')) {
+                $table->integer('points_earned')->default(0)->after('grand_total');
+            }
         });
     }
 

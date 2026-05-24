@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->decimal('lifetime_points', 12, 2)->default(0)->after('loyalty_points');
-            $table->decimal('total_spent', 12, 2)->default(0)->after('lifetime_points');
+            if (!Schema::hasColumn('customers', 'lifetime_points')) {
+                $table->decimal('lifetime_points', 12, 2)->default(0)->after('loyalty_points');
+            }
+            if (!Schema::hasColumn('customers', 'total_spent')) {
+                $table->decimal('total_spent', 12, 2)->default(0)->after('lifetime_points');
+            }
         });
     }
 

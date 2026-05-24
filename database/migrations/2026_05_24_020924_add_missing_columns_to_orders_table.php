@@ -44,18 +44,6 @@ return new class extends Migration
             if (!Schema::hasColumn('orders', 'notes')) {
                 $table->text('notes')->nullable()->after('grand_total');
             }
-            
-            // Update status enum to include 'cancelled'
-            $table->enum('status', ['pending', 'preparing', 'served', 'completed', 'cancelled'])
-                  ->default('pending')
-                  ->change();
-                  
-            // Add indexes
-            if (!Schema::hasColumn('orders', 'tenant_id')) {
-                $table->index('tenant_id');
-            }
-            $table->index('status');
-            $table->index('created_at');
         });
     }
 

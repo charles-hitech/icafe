@@ -9,8 +9,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('customers', function (Blueprint $table) {
-            $table->decimal('credit_limit', 12, 2)->default(0)->after('total_spent');
-            $table->decimal('due_amount', 12, 2)->default(0)->after('credit_limit');
+            if (!Schema::hasColumn('customers', 'credit_limit')) {
+                $table->decimal('credit_limit', 12, 2)->default(0)->after('total_spent');
+            }
+            if (!Schema::hasColumn('customers', 'due_amount')) {
+                $table->decimal('due_amount', 12, 2)->default(0)->after('credit_limit');
+            }
         });
     }
 

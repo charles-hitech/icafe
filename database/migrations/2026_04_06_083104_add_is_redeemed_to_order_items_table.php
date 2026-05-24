@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->boolean('is_redeemed')->default(false)->after('price');
+            if (!Schema::hasColumn('order_items', 'is_redeemed')) {
+                $table->boolean('is_redeemed')->default(false)->after('price');
+            }
         });
     }
 

@@ -12,9 +12,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('order_items', function (Blueprint $table) {
-            $table->string('kds_status')->default('pending'); // pending, preparing, ready
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('finished_at')->nullable();
+            if (!Schema::hasColumn('order_items', 'kds_status')) {
+                $table->string('kds_status')->default('pending'); // pending, preparing, ready
+            }
+            if (!Schema::hasColumn('order_items', 'started_at')) {
+                $table->timestamp('started_at')->nullable();
+            }
+            if (!Schema::hasColumn('order_items', 'finished_at')) {
+                $table->timestamp('finished_at')->nullable();
+            }
         });
     }
 

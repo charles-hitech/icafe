@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('points_redeemed', 10, 2)->default(0)->after('discount_amount');
+            if (!Schema::hasColumn('orders', 'points_redeemed')) {
+                $table->decimal('points_redeemed', 10, 2)->default(0)->after('discount_amount');
+            }
         });
     }
 

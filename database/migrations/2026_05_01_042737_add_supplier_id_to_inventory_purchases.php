@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('inventory_purchases', function (Blueprint $table) {
-            $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
+            if (!Schema::hasColumn('inventory_purchases', 'supplier_id')) {
+                $table->foreignId('supplier_id')->nullable()->constrained()->nullOnDelete();
+            }
         });
     }
 

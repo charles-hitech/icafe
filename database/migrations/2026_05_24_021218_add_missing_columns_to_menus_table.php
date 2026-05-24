@@ -42,11 +42,6 @@ return new class extends Migration
             
             // Update price precision
             $table->decimal('price', 10, 2)->change();
-            
-            // Add indexes
-            $table->index('tenant_id');
-            $table->index('category_id');
-            $table->index('status');
         });
     }
 

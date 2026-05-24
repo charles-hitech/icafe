@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('menus', function (Blueprint $table) {
-            $table->string('image_path')->nullable()->after('status');
-            $table->string('icon_path')->nullable()->after('image_path');
+            if (!Schema::hasColumn('menus', 'image_path')) {
+                $table->string('image_path')->nullable()->after('status');
+            }
+            if (!Schema::hasColumn('menus', 'icon_path')) {
+                $table->string('icon_path')->nullable()->after('image_path');
+            }
         });
     }
 
