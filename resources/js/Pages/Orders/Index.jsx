@@ -324,9 +324,8 @@ export default function OrderIndex({ orders, filters, counts }) {
                             </div>
                         </div>
                     ) : viewMode === 'list' ? (
-                        <div className="bg-white/60 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-hidden">
-                            <div className="overflow-x-auto">
-                                <table className="w-full text-left border-collapse min-w-[800px]">
+                        <div className="bg-white/60 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-white/80 shadow-[0_8px_30px_rgba(0,0,0,0.04)] overflow-x-auto">
+                            <table className="w-full text-left border-collapse min-w-[800px]">
                                     <thead>
                                         <tr className="border-b border-gray-100 bg-gray-50/50">
                                             <th className="px-3 sm:px-4 py-2.5 sm:py-3">
@@ -433,7 +432,6 @@ export default function OrderIndex({ orders, filters, counts }) {
                                         ))}
                                     </tbody>
                                 </table>
-                            </div>
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
@@ -610,15 +608,21 @@ export default function OrderIndex({ orders, filters, counts }) {
                         className="fixed inset-0 z-[9998]"
                         onClick={() => setShowFilterDropdown(false)}
                     />
+                    {/* Desktop: positioned dropdown, Mobile: centered modal-style */}
                     <div
-                        style={{ top: dropdownPos.top, right: dropdownPos.right }}
-                        className="fixed z-[9999] w-52 bg-white rounded-xl shadow-2xl border border-gray-100 overflow-hidden"
+                        style={{ 
+                            top: window.innerWidth >= 640 ? dropdownPos.top : '50%',
+                            right: window.innerWidth >= 640 ? dropdownPos.right : 'auto',
+                            left: window.innerWidth >= 640 ? 'auto' : '50%',
+                            transform: window.innerWidth >= 640 ? 'none' : 'translate(-50%, -50%)'
+                        }}
+                        className="fixed z-[9999] w-[calc(100vw-2rem)] max-w-xs sm:w-52 bg-white rounded-xl sm:rounded-xl shadow-2xl border border-gray-100 overflow-hidden"
                     >
                         {filterOptions.map((option) => (
                             <button
                                 key={option.value}
                                 onClick={() => handleFilterChange(option.value)}
-                                className={`w-full text-left px-4 py-2.5 text-xs font-black uppercase tracking-wider transition-colors flex items-center justify-between ${
+                                className={`w-full text-left px-4 py-2.5 sm:py-2.5 text-xs font-black uppercase tracking-wider transition-colors flex items-center justify-between ${
                                     activeFilter === option.value
                                         ? 'bg-brand-600 text-white'
                                         : 'text-gray-600 hover:bg-brand-600 hover:text-white'

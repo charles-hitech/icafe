@@ -123,7 +123,7 @@ class ReportController extends Controller
         $busiestHour = $hourCounts->sortDesc()->keys()->first();
 
         // ── Top Items (MongoDB-compatible) ─────────────────────────────────
-        $orderIds = $allOrders->pluck('_id');
+        $orderIds = $allOrders->pluck('id');
         $allItems = OrderItem::whereIn('order_id', $orderIds)->with('menu')->get();
         
         $topItems = $allItems->groupBy('menu_id')->map(function($items) {
@@ -157,7 +157,33 @@ class ReportController extends Controller
         $allMenus  = \App\Models\Menu::orderBy('name')->get(['id', 'name']);
 
         // ── Paginated transactions ─────────────────────────────────────────
-        $orders = (clone $baseQuery)->latest('updated_at')->paginate(20)->withQueryString();
+        // For 'due' payment filter, we need to fetch all and filter in PHP (MongoDB limitation)
+        if ($payment === 'due') {
+            // Get all orders, filter in collection, then manually paginate
+            $allPaginationOrders = (clone $baseQuery)->latest('updated_at')->get();
+            $filteredOrders = $allPaginationOrders->filter(function($order) {
+                return $order->grand_total > ($order->cash_amount + $order->online_amount);
+            })->values();
+            
+            // Manual pagination
+            $perPage = 20;
+            $currentPage = (int) $request->get('page', 1);
+            $total = $filteredOrders->count();
+            $items = $filteredOrders->slice(($currentPage - 1) * $perPage, $perPage)->values();
+            
+            $orders = new \Illuminate\Pagination\LengthAwarePaginator(
+                $items,
+                $total,
+                $perPage,
+                $currentPage,
+                [
+                    'path' => $request->url(),
+                    'query' => $request->query()
+                ]
+            );
+        } else {
+            $orders = (clone $baseQuery)->latest('updated_at')->paginate(20)->withQueryString();
+        }
 
         return Inertia::render('Reports/Index', [
             'orders'      => $orders,
@@ -347,7 +373,7 @@ class ReportController extends Controller
         })->sortBy('date')->values();
 
         // 2. Sales by Category (MongoDB-compatible)
-        $orderIds = $orders->pluck('_id');
+        $orderIds = $orders->pluck('id');
         $orderItems = OrderItem::whereIn('order_id', $orderIds)->with('menu')->get();
         
         $categorySales = $orderItems->groupBy(function ($item) {

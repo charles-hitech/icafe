@@ -743,12 +743,13 @@ export default function ReservationIndex({ reservations, tables }) {
                             <>
                                 {/* ── Desktop Datatable ── */}
                                 <div className="hidden lg:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="border-b border-gray-100 bg-gray-50">
-                                                <th className="px-4 py-3">
-                                                    <button onClick={() => handleSort('customer_name')} className="flex items-center text-[10px] uppercase font-black tracking-widest text-gray-400 hover:text-gray-700 transition-colors">
-                                                        Guest <SortIcon col="customer_name" />
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left min-w-[900px]">
+                                            <thead>
+                                                <tr className="border-b border-gray-100 bg-gray-50">
+                                                    <th className="px-4 py-3">
+                                                        <button onClick={() => handleSort('customer_name')} className="flex items-center text-[10px] uppercase font-black tracking-widest text-gray-400 hover:text-gray-700 transition-colors">
+                                                            Guest <SortIcon col="customer_name" />
                                                     </button>
                                                 </th>
                                                 <th className="px-4 py-3">
@@ -840,6 +841,7 @@ export default function ReservationIndex({ reservations, tables }) {
                                             ))}
                                         </tbody>
                                     </table>
+                                    </div>
 
                                     {/* Desktop Pagination */}
                                     <div className="flex items-center justify-between px-4 py-3 border-t border-gray-100 bg-gray-50/40">
@@ -998,12 +1000,13 @@ export default function ReservationIndex({ reservations, tables }) {
                             <>
                                 {/* ── Desktop Datatable ── */}
                                 <div className="hidden lg:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="border-b border-gray-100 bg-gray-50">
-                                                <th className="px-4 py-3 text-[10px] uppercase font-black tracking-widest text-gray-400">
-                                                    <button onClick={() => handleTableSort('table_number')} className="flex items-center gap-1 hover:text-gray-600 transition-colors">
-                                                        Table <TableSortIcon col="table_number" />
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full text-left min-w-[700px]">
+                                            <thead>
+                                                <tr className="border-b border-gray-100 bg-gray-50">
+                                                    <th className="px-4 py-3 text-[10px] uppercase font-black tracking-widest text-gray-400">
+                                                        <button onClick={() => handleTableSort('table_number')} className="flex items-center gap-1 hover:text-gray-600 transition-colors">
+                                                            Table <TableSortIcon col="table_number" />
                                                     </button>
                                                 </th>
                                                 <th className="px-4 py-3 text-[10px] uppercase font-black tracking-widest text-gray-400">
@@ -1062,6 +1065,7 @@ export default function ReservationIndex({ reservations, tables }) {
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
                         </div>
 
                         {/* Desktop Pagination */}

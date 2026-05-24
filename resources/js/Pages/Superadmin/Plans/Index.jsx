@@ -87,7 +87,8 @@ export default function Index({ plans }) {
 
                 {/* Desktop Table */}
                 <div className="hidden md:block bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table className="w-full text-left border-collapse">
+                    <div className="overflow-x-auto">
+                        <table className="w-full text-left border-collapse min-w-[800px]">
                         <thead>
                             <tr className="border-b border-gray-100 bg-gray-50/50">
                                 <th className="py-4 px-6 text-xs font-black text-gray-400 uppercase tracking-widest">Plan Name</th>
@@ -146,6 +147,7 @@ export default function Index({ plans }) {
                             )}
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </AuthenticatedLayout>
