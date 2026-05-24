@@ -1,12 +1,13 @@
 import { Link, usePage, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Table, CalendarDays, ShoppingBag, Coffee, ChevronRight, Menu as MenuIcon, X, Settings, User, BarChart3, ChefHat, LogIn, LogOut, Clock, Users, Gift, FolderOpen, ListPlus, Percent, ConciergeBell, Boxes, Building2, Activity } from 'lucide-react';
+import { LayoutDashboard, Table, CalendarDays, ShoppingBag, Coffee, ChevronRight, Menu as MenuIcon, X, Settings, User, BarChart3, ChefHat, LogIn, LogOut, Clock, Users, Gift, FolderOpen, ListPlus, Percent, ConciergeBell, Boxes, Building2, Activity, ChevronLeft } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
 
 export default function AuthenticatedLayout({ children }) {
     const { auth, settings, active_orders_count, cancelled_orders_count, completed_today_count, kds_items_count, service_ready_count } = usePage().props;
     const user = auth.user;
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     const [isNavigating, setIsNavigating] = useState(false);
     const searchParams = new URLSearchParams(window.location.search);
@@ -161,24 +162,58 @@ export default function AuthenticatedLayout({ children }) {
             )}
 
             {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 z-50 w-72 transform flex-col justify-between bg-white border-r border-gray-100 shadow-sm lg:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:static lg:flex ${usePage().props.is_impersonating ? 'mt-12' : ''}`}>
+            <aside className={`fixed inset-y-0 left-0 z-50 transform flex-col justify-between bg-white border-r border-gray-100 shadow-sm transition-all duration-300 ease-in-out lg:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:static lg:flex ${usePage().props.is_impersonating ? 'mt-12' : ''} ${isSidebarCollapsed ? 'w-20' : 'w-72'}`}>
                 <div className="flex h-full flex-col">
-                    <div className="flex h-16 items-center justify-between px-5 border-b border-gray-100">
-                        <Link href="/" className="flex items-center space-x-3 group outline-none">
-                            <div className={`flex h-12 w-12 items-center justify-center rounded-2xl overflow-hidden ${!settings?.site_logo ? 'bg-gradient-to-tr from-brand-600 via-purple-600 to-pink-500' : ''}`}>
-                                <ApplicationLogo className={settings?.site_logo ? "w-full h-full object-cover" : "h-6 w-6 text-white"} />
-                            </div>
-                            <span className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 truncate max-w-[150px]">
-                                {settings?.site_name || 'CaféOS'}
-                            </span>
-                        </Link>
-                        <button onClick={() => setIsMobileOpen(false)} className="lg:hidden text-gray-400 hover:text-gray-900 focus:outline-none transition-colors">
-                            <X className="h-6 w-6" />
+                    <div className={`flex h-16 items-center border-b border-gray-100 transition-all duration-300 ${isSidebarCollapsed ? 'justify-center px-3' : 'justify-between px-5'}`}>
+                        {!isSidebarCollapsed ? (
+                            <>
+                                <Link href="/" className="flex items-center space-x-3 group outline-none">
+                                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl overflow-hidden ${!settings?.site_logo ? 'bg-gradient-to-tr from-brand-600 via-purple-600 to-pink-500' : ''}`}>
+                                        <ApplicationLogo className={settings?.site_logo ? "w-full h-full object-cover" : "h-6 w-6 text-white"} />
+                                    </div>
+                                    <span className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 truncate max-w-[150px]">
+                                        {settings?.site_name || 'CaféOS'}
+                                    </span>
+                                </Link>
+                                <button onClick={() => setIsMobileOpen(false)} className="lg:hidden text-gray-400 hover:text-gray-900 focus:outline-none transition-colors">
+                                    <X className="h-6 w-6" />
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <Link href="/" className="flex items-center group outline-none">
+                                    <div className={`flex h-12 w-12 items-center justify-center rounded-2xl overflow-hidden ${!settings?.site_logo ? 'bg-gradient-to-tr from-brand-600 via-purple-600 to-pink-500' : ''}`}>
+                                        <ApplicationLogo className={settings?.site_logo ? "w-full h-full object-cover" : "h-6 w-6 text-white"} />
+                                    </div>
+                                </Link>
+                                <button onClick={() => setIsMobileOpen(false)} className="lg:hidden absolute top-5 right-3 text-gray-400 hover:text-gray-900 focus:outline-none transition-colors">
+                                    <X className="h-5 w-5" />
+                                </button>
+                            </>
+                        )}
+                    </div>
+
+                    {/* Collapse Toggle Button */}
+                    <div className={`hidden lg:flex border-b border-gray-100 ${isSidebarCollapsed ? 'justify-center py-2' : 'justify-end py-2 px-4'}`}>
+                        <button
+                            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                            className="flex items-center justify-center h-8 w-8 rounded-lg hover:bg-brand-50 text-gray-400 hover:text-brand-600 transition-colors group"
+                            title={isSidebarCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+                        >
+                            {isSidebarCollapsed ? (
+                                <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
+                            ) : (
+                                <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
+                            )}
                         </button>
                     </div>
 
-                    <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto custom-scrollbar">
-                        <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-brand-400/80 mb-3">{user.role === 'super_admin' ? 'Super Admin Menu' : 'Admin Menu'}</p>
+                    <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto custom-scrollbar scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent hover:scrollbar-thumb-gray-400">
+                        {!isSidebarCollapsed && (
+                            <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-brand-400/80 mb-3">
+                                {user.role === 'super_admin' ? 'Super Admin Menu' : 'Admin Menu'}
+                            </p>
+                        )}
                         {navItems.filter(item => {
                             if (user.role === 'super_admin') return item.superAdminOnly;
                             if (item.superAdminOnly) return false;
@@ -187,29 +222,43 @@ export default function AuthenticatedLayout({ children }) {
                         }).map((item) => {
                             const Icon = item.icon;
                             return (
-                                <div key={item.name}>
+                                <div key={item.name} title={isSidebarCollapsed ? item.name : ''}>
                                     <Link
                                         href={item.href}
-                                        className={`group relative flex items-center space-x-3 rounded-xl px-3 py-2.5 overflow-hidden outline-none ${
+                                        className={`group relative flex items-center rounded-xl overflow-hidden outline-none transition-all duration-200 ${
+                                            isSidebarCollapsed ? 'justify-center px-3 py-3' : 'space-x-3 px-3 py-2.5'
+                                        } ${
                                             item.active
                                             ? 'bg-gradient-to-br from-white/90 to-white/50 text-brand-700 shadow-[0_4px_20px_-4px_rgba(79,70,229,0.15)] border border-white/80'
                                             : 'text-gray-500 hover:bg-white/40 hover:text-brand-600 border border-transparent hover:shadow-sm'
                                         }`}
                                     >
-                                        {item.active && (
+                                        {item.active && !isSidebarCollapsed && (
                                             <div className="absolute left-0 top-1/2 -mt-3.5 h-7 w-[4px] rounded-r-full bg-brand-600 shadow-[2px_0_8px_rgba(79,70,229,0.5)]" />
                                         )}
-                                        <Icon className={`h-5 w-5 ${item.active ? 'scale-110' : ''}`} strokeWidth={item.active ? 2.5 : 2} />
-                                        <span className={`font-semibold tracking-wide flex-1 ${item.active ? 'text-brand-900' : ''}`}>{item.name}</span>
-                                        {item.badge > 0 && !item.submenu && (
-                                            <span className={`px-2 py-0.5 text-[10px] font-black text-white rounded-full ${item.badgeColor || 'bg-brand-500'} ${item.active ? 'mr-6' : ''}`}>
-                                                {item.badge}
+                                        {item.active && isSidebarCollapsed && (
+                                            <div className="absolute left-0 top-1/2 -mt-4 h-8 w-[3px] rounded-r-full bg-brand-600" />
+                                        )}
+                                        <Icon className={`h-5 w-5 shrink-0 ${item.active ? 'scale-110' : ''}`} strokeWidth={item.active ? 2.5 : 2} />
+                                        {!isSidebarCollapsed && (
+                                            <>
+                                                <span className={`font-semibold tracking-wide flex-1 ${item.active ? 'text-brand-900' : ''}`}>{item.name}</span>
+                                                {item.badge > 0 && !item.submenu && (
+                                                    <span className={`px-2 py-0.5 text-[10px] font-black text-white rounded-full ${item.badgeColor || 'bg-brand-500'} ${item.active ? 'mr-6' : ''}`}>
+                                                        {item.badge}
+                                                    </span>
+                                                )}
+                                                {item.active && !item.submenu && <ChevronRight className="absolute right-4 h-4 w-4 opacity-40 text-brand-700" strokeWidth={3} />}
+                                            </>
+                                        )}
+                                        {isSidebarCollapsed && item.badge > 0 && (
+                                            <span className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center bg-red-500 text-white text-[9px] font-black rounded-full border-2 border-white">
+                                                {item.badge > 9 ? '9+' : item.badge}
                                             </span>
                                         )}
-                                        {item.active && !item.submenu && <ChevronRight className="absolute right-4 h-4 w-4 opacity-40 text-brand-700" strokeWidth={3} />}
                                     </Link>
                                     
-                                    {item.submenu && item.active && (
+                                    {item.submenu && item.active && !isSidebarCollapsed && (
                                         <div className="ml-8 mt-1 space-y-1">
                                             {item.submenu.map(sub => (
                                                 <Link
@@ -238,39 +287,68 @@ export default function AuthenticatedLayout({ children }) {
 
 
 
-                    <div className="p-5 mt-auto border-t border-white/40 bg-gradient-to-t from-white/20 to-transparent">
-                        <div className="rounded-2xl bg-white p-4 border border-gray-100 shadow-sm group">
-                            <div className="flex items-center space-x-3">
-                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-100 to-purple-100 text-brand-700 border border-brand-200/50 shadow-inner">
+                    <div className={`p-5 mt-auto border-t border-white/40 bg-gradient-to-t from-white/20 to-transparent transition-all duration-300 ${isSidebarCollapsed ? 'px-3' : ''}`}>
+                        <div className={`rounded-2xl bg-white border border-gray-100 shadow-sm group ${isSidebarCollapsed ? 'p-2' : 'p-4'}`}>
+                            <div className={`flex items-center ${isSidebarCollapsed ? 'justify-center' : 'space-x-3'}`}>
+                                <div className={`flex shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-100 to-purple-100 text-brand-700 border border-brand-200/50 shadow-inner ${isSidebarCollapsed ? 'h-10 w-10' : 'h-11 w-11'}`}>
                                     <User className="h-5 w-5" strokeWidth={2.5} />
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="truncate text-sm font-bold text-gray-900 tracking-tight">{user.name}</p>
-                                    <div className="flex items-center space-x-1.5 mt-0.5">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
-                                        <p className="truncate text-xs font-semibold text-gray-500 uppercase tracking-wider">{user.role || 'Staff'}</p>
-                                    </div>
-                                </div>
+                                {!isSidebarCollapsed && (
+                                    <>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="truncate text-sm font-bold text-gray-900 tracking-tight">{user.name}</p>
+                                            <div className="flex items-center space-x-1.5 mt-0.5">
+                                                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
+                                                <p className="truncate text-xs font-semibold text-gray-500 uppercase tracking-wider">{user.role || 'Staff'}</p>
+                                            </div>
+                                        </div>
 
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <button className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-white transition-colors focus:ring-2 focus:ring-brand-500/20 outline-none">
-                                            <Settings className="h-4 w-4 text-gray-400" />
-                                        </button>
-                                    </Dropdown.Trigger>
-                                    <Dropdown.Content align="top-right" contentClasses="w-56 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-2xl rounded-2xl overflow-hidden py-1">
-                                        <Dropdown.Link href={route('profile.edit')} className="flex items-center py-2.5 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                            Profile Settings
-                                        </Dropdown.Link>
-                                        <Dropdown.Link href={route('settings.index')} className="flex items-center py-2.5 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                            Global Branding
-                                        </Dropdown.Link>
-                                        <div className="h-px bg-gray-100/80 my-1 mx-3"></div>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="flex items-center py-2.5 px-4 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors w-full text-left">
-                                            Sign Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
+                                        <Dropdown>
+                                            <Dropdown.Trigger>
+                                                <button className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-white transition-colors focus:ring-2 focus:ring-brand-500/20 outline-none">
+                                                    <Settings className="h-4 w-4 text-gray-400" />
+                                                </button>
+                                            </Dropdown.Trigger>
+                                            <Dropdown.Content align="top-right" contentClasses="w-56 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-2xl rounded-2xl overflow-hidden py-1">
+                                                <Dropdown.Link href={route('profile.edit')} className="flex items-center py-2.5 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
+                                                    Profile Settings
+                                                </Dropdown.Link>
+                                                <Dropdown.Link href={route('settings.index')} className="flex items-center py-2.5 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
+                                                    Global Branding
+                                                </Dropdown.Link>
+                                                <div className="h-px bg-gray-100/80 my-1 mx-3"></div>
+                                                <Dropdown.Link href={route('logout')} method="post" as="button" className="flex items-center py-2.5 px-4 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors w-full text-left">
+                                                    Sign Out
+                                                </Dropdown.Link>
+                                            </Dropdown.Content>
+                                        </Dropdown>
+                                    </>
+                                )}
+                                {isSidebarCollapsed && (
+                                    <Dropdown>
+                                        <Dropdown.Trigger>
+                                            <button className="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-lg hover:bg-brand-50 transition-colors focus:ring-2 focus:ring-brand-500/20 outline-none">
+                                                <Settings className="h-3.5 w-3.5 text-gray-400" />
+                                            </button>
+                                        </Dropdown.Trigger>
+                                        <Dropdown.Content align="left" contentClasses="w-48 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-2xl rounded-2xl overflow-hidden py-1">
+                                            <div className="px-4 py-2 border-b border-gray-100">
+                                                <p className="text-xs font-bold text-gray-900 truncate">{user.name}</p>
+                                                <p className="text-[10px] font-semibold text-gray-500 uppercase tracking-wider">{user.role || 'Staff'}</p>
+                                            </div>
+                                            <Dropdown.Link href={route('profile.edit')} className="flex items-center py-2 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
+                                                Profile
+                                            </Dropdown.Link>
+                                            <Dropdown.Link href={route('settings.index')} className="flex items-center py-2 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
+                                                Settings
+                                            </Dropdown.Link>
+                                            <div className="h-px bg-gray-100/80 my-1 mx-3"></div>
+                                            <Dropdown.Link href={route('logout')} method="post" as="button" className="flex items-center py-2 px-4 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors w-full text-left">
+                                                Sign Out
+                                            </Dropdown.Link>
+                                        </Dropdown.Content>
+                                    </Dropdown>
+                                )}
                             </div>
                         </div>
                     </div>

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Traits\BelongsToTenant;
 
-use MongoDB\Laravel\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
 class Setting extends Model
 {

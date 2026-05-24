@@ -14,10 +14,20 @@ return new class extends Migration
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('category');
-            $table->decimal('price', 8, 2);
-            $table->boolean('status')->default(true); // true a.k.a active
+            $table->string('category')->nullable(); // Legacy column
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('tenant_id')->constrained()->cascadeOnDelete();
+            $table->decimal('price', 10, 2);
+            $table->decimal('original_price', 10, 2)->nullable();
+            $table->decimal('cost_price', 10, 2)->default(0);
+            $table->boolean('status')->default(true);
+            $table->string('image_path')->nullable();
+            $table->string('icon_path')->nullable();
             $table->timestamps();
+            
+            $table->index('tenant_id');
+            $table->index('category_id');
+            $table->index('status');
         });
     }
 
