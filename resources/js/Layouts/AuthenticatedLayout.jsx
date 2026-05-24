@@ -1,7 +1,8 @@
 import { Link, usePage, router } from '@inertiajs/react';
 import { useState, useEffect } from 'react';
-import { LayoutDashboard, Table, CalendarDays, ShoppingBag, Coffee, ChevronRight, Menu as MenuIcon, X, Settings, User, BarChart3, ChefHat, LogIn, LogOut, Clock, Users, Gift, FolderOpen, ListPlus, Percent, ConciergeBell, Boxes, Building2, Activity } from 'lucide-react';
+import { LayoutDashboard, Table, CalendarDays, ShoppingBag, Coffee, ChevronRight, ChevronDown, Menu as MenuIcon, X, Settings, User, BarChart3, ChefHat, LogIn, LogOut, Clock, Users, Gift, FolderOpen, ListPlus, Percent, ConciergeBell, Boxes, Building2, Activity, Bell } from 'lucide-react';
 import Dropdown from '@/Components/Dropdown';
+import ApplicationLogo from '@/Components/ApplicationLogo';
 
 export default function AuthenticatedLayout({ children }) {
     const { auth, settings, active_orders_count, cancelled_orders_count, completed_today_count, kds_items_count, service_ready_count } = usePage().props;
@@ -74,7 +75,7 @@ export default function AuthenticatedLayout({ children }) {
         { name: 'Inventory', href: route('inventory.index'), icon: Boxes, active: route().current('inventory.*'), adminOnly: true, hideSuperAdmin: true },
         { name: 'Kitchen KDS', href: route('orders.kds'), icon: ChefHat, active: route().current('orders.kds'), hideSuperAdmin: true, badge: kds_items_count, badgeColor: 'bg-amber-500' },
         { name: 'Service View', href: route('orders.service'), icon: ConciergeBell, active: route().current('orders.service'), hideSuperAdmin: true, badge: service_ready_count, badgeColor: 'bg-blue-500' },
-        { name: 'Loyalty', href: route('loyalty-rewards.index'), icon: Gift, active: route().current('loyalty-rewards.*'), adminOnly: true, hideSuperAdmin: true },
+        // { name: 'Loyalty', href: route('loyalty-rewards.index'), icon: Gift, active: route().current('loyalty-rewards.*'), adminOnly: true, hideSuperAdmin: true },
         { 
             name: 'Reports', 
             href: route('reports.index'), 
@@ -87,12 +88,22 @@ export default function AuthenticatedLayout({ children }) {
                 { name: 'Advance Report', href: route('reports.analytics'), active: route().current('reports.analytics') }
             ]
         },
-        { name: 'Staff Performance', href: route('staff.performance'), icon: Users, active: route().current('staff.performance'), adminOnly: true, hideSuperAdmin: true },
         { name: 'Customers', href: route('customers.index'), icon: Users, active: route().current('customers.*'), hideSuperAdmin: true },
-        { name: 'Taxes', href: route('taxes.index'), icon: Percent, active: route().current('taxes.*'), adminOnly: true, hideSuperAdmin: true },
-        { name: 'My Plan', href: route('tenant.plan'), icon: Activity, active: route().current('tenant.plan'), adminOnly: true, hideSuperAdmin: true },
-        { name: 'Support Tickets', href: route('support.index'), icon: Activity, active: route().current('support.*'), adminOnly: true, hideSuperAdmin: true },
-        { name: 'Global Settings', href: route('settings.index'), icon: Settings, active: route().current('settings.*'), adminOnly: true, hideSuperAdmin: true },
+        { 
+            name: 'System Settings', 
+            href: route('settings.index'), 
+            icon: Settings, 
+            active: route().current('settings.*') || route().current('taxes.*') || route().current('tenant.plan') || route().current('staff.performance') || route().current('support.*'), 
+            adminOnly: true, 
+            hideSuperAdmin: true,
+            submenu: [
+                { name: 'Global Settings', href: route('settings.index'), active: route().current('settings.*') },
+                { name: 'Staff Performance', href: route('staff.performance'), active: route().current('staff.performance') },
+                { name: 'Taxes', href: route('taxes.index'), active: route().current('taxes.*') },
+                { name: 'My Plan', href: route('tenant.plan'), active: route().current('tenant.plan') },
+                { name: 'Support Tickets', href: route('support.index'), active: route().current('support.*') }
+            ]
+        },
         
         // Super Admin Links
         { name: 'Global Dashboard', href: route('superadmin.dashboard'), icon: LayoutDashboard, active: route().current('superadmin.dashboard'), superAdminOnly: true },
@@ -141,13 +152,13 @@ export default function AuthenticatedLayout({ children }) {
     }
 
     return (
-        <div data-theme={settings?.theme || 'blue'} className="flex min-h-screen bg-gray-50 font-sans text-gray-900 selection:bg-brand-300 selection:text-brand-900">
+        <div data-theme={settings?.theme || 'blue'} className="min-h-screen bg-gray-50 font-sans text-gray-900">
             {/* Impersonation Banner */}
             {usePage().props.is_impersonating && (
                 <div className="fixed top-0 inset-x-0 z-[100] bg-orange-600 text-white px-4 py-2 flex items-center justify-between shadow-md">
                     <div className="flex items-center gap-2">
                         <Activity className="w-5 h-5 animate-pulse" />
-                        <span className="text-sm font-bold tracking-wide">You are currently impersonating a cafe administrator. Actions you take will modify their live data.</span>
+                        <span className="text-sm font-bold tracking-wide">You are currently impersonating a cafe administrator.</span>
                     </div>
                     <Link
                         href={route('impersonate.stop')}
@@ -160,182 +171,243 @@ export default function AuthenticatedLayout({ children }) {
                 </div>
             )}
 
-            {/* Sidebar */}
-            <aside className={`fixed inset-y-0 left-0 z-50 w-72 transform flex-col justify-between bg-white border-r border-gray-100 shadow-sm lg:translate-x-0 ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} lg:static lg:flex ${usePage().props.is_impersonating ? 'mt-12' : ''}`}>
-                <div className="flex h-full flex-col">
-                    <div className="flex h-16 items-center justify-between px-5 border-b border-gray-100">
-                        <Link href="/" className="flex items-center space-x-3 group outline-none">
-                            <div className={`flex h-12 w-12 items-center justify-center rounded-2xl overflow-hidden ${!settings?.site_logo ? 'bg-gradient-to-tr from-brand-600 via-purple-600 to-pink-500' : ''}`}>
-                                <ApplicationLogo className={settings?.site_logo ? "w-full h-full object-cover" : "h-6 w-6 text-white"} />
-                            </div>
-                            <span className="text-2xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-600 truncate max-w-[150px]">
-                                {settings?.site_name || 'CaféOS'}
-                            </span>
-                        </Link>
-                        <button onClick={() => setIsMobileOpen(false)} className="lg:hidden text-gray-400 hover:text-gray-900 focus:outline-none transition-colors">
-                            <X className="h-6 w-6" />
-                        </button>
-                    </div>
+            {/* Top Navigation Bar */}
+            <header className={`sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm ${usePage().props.is_impersonating ? 'mt-12' : ''}`}>
+                <div className="mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex h-16 items-center justify-between">
+                        {/* Logo Section */}
+                        <div className="flex items-center space-x-6">
+                            <Link href="/" className="flex items-center space-x-3 group outline-none">
+                                <div className={`flex h-10 w-10 items-center justify-center rounded-lg overflow-hidden shadow-sm ${!settings?.site_logo ? 'bg-brand-600' : ''}`}>
+                                    <ApplicationLogo className={settings?.site_logo ? "w-full h-full object-cover" : "h-6 w-6 text-white"} />
+                                </div>
+                                <div className="hidden lg:block">
+                                    <span className="text-lg font-bold text-gray-900">{settings?.site_name || 'CaféOS'}</span>
+                                    <p className="text-xs text-gray-500 -mt-0.5">Management System</p>
+                                </div>
+                            </Link>
 
-                    <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto custom-scrollbar">
-                        <p className="px-3 text-[10px] font-bold uppercase tracking-widest text-brand-400/80 mb-3">{user.role === 'super_admin' ? 'Super Admin Menu' : 'Admin Menu'}</p>
-                        {navItems.filter(item => {
-                            if (user.role === 'super_admin') return item.superAdminOnly;
-                            if (item.superAdminOnly) return false;
-                            if (item.adminOnly && user.role !== 'admin') return false;
-                            return true;
-                        }).map((item) => {
-                            const Icon = item.icon;
-                            return (
-                                <div key={item.name}>
-                                    <Link
-                                        href={item.href}
-                                        className={`group relative flex items-center space-x-3 rounded-xl px-3 py-2.5 overflow-hidden outline-none ${
-                                            item.active
-                                            ? 'bg-gradient-to-br from-white/90 to-white/50 text-brand-700 shadow-[0_4px_20px_-4px_rgba(79,70,229,0.15)] border border-white/80'
-                                            : 'text-gray-500 hover:bg-white/40 hover:text-brand-600 border border-transparent hover:shadow-sm'
-                                        }`}
-                                    >
-                                        {item.active && (
-                                            <div className="absolute left-0 top-1/2 -mt-3.5 h-7 w-[4px] rounded-r-full bg-brand-600 shadow-[2px_0_8px_rgba(79,70,229,0.5)]" />
-                                        )}
-                                        <Icon className={`h-5 w-5 ${item.active ? 'scale-110' : ''}`} strokeWidth={item.active ? 2.5 : 2} />
-                                        <span className={`font-semibold tracking-wide flex-1 ${item.active ? 'text-brand-900' : ''}`}>{item.name}</span>
-                                        {item.badge > 0 && !item.submenu && (
-                                            <span className={`px-2 py-0.5 text-[10px] font-black text-white rounded-full ${item.badgeColor || 'bg-brand-500'} ${item.active ? 'mr-6' : ''}`}>
-                                                {item.badge}
-                                            </span>
-                                        )}
-                                        {item.active && !item.submenu && <ChevronRight className="absolute right-4 h-4 w-4 opacity-40 text-brand-700" strokeWidth={3} />}
-                                    </Link>
+                            {/* Desktop Navigation */}
+                            <nav className="hidden lg:flex items-center space-x-1">
+                                {navItems.filter(item => {
+                                    if (user.role === 'super_admin') return item.superAdminOnly;
+                                    if (item.superAdminOnly) return false;
+                                    if (item.adminOnly && user.role !== 'admin') return false;
+                                    return true;
+                                }).map((item) => {
+                                    const Icon = item.icon;
                                     
-                                    {item.submenu && item.active && (
-                                        <div className="ml-8 mt-1 space-y-1">
-                                            {item.submenu.map(sub => (
-                                                <Link
-                                                    key={sub.name}
-                                                    href={sub.href}
-                                                    className={`group flex items-center justify-between rounded-lg px-3 py-2 text-sm outline-none transition-colors ${
-                                                        sub.active 
-                                                        ? 'bg-brand-50 text-brand-700 font-bold' 
-                                                        : 'text-gray-500 hover:bg-white/50 hover:text-brand-600 font-medium'
-                                                    }`}
-                                                >
-                                                    <span>{sub.name}</span>
-                                                    {sub.badge > 0 && (
-                                                        <span className={`px-2 py-0.5 text-[10px] font-black text-white rounded-full ${sub.badgeColor || 'bg-brand-500'}`}>
-                                                            {sub.badge}
-                                                        </span>
-                                                    )}
-                                                </Link>
-                                            ))}
+                                    if (item.submenu) {
+                                        return (
+                                            <Dropdown key={item.name}>
+                                                <Dropdown.Trigger>
+                                                    <button className={`group flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
+                                                        item.active
+                                                        ? 'bg-brand-50 text-brand-700'
+                                                        : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
+                                                    }`}>
+                                                        <Icon className={`h-5 w-5 ${item.active ? 'text-brand-600' : ''}`} strokeWidth={2} />
+                                                        <span>{item.name}</span>
+                                                        <ChevronDown className={`h-4 w-4 ${item.active ? 'text-brand-500' : 'text-gray-500'}`} />
+                                                    </button>
+                                                </Dropdown.Trigger>
+                                                <Dropdown.Content align="left" contentClasses="w-56 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden py-1 mt-1">
+                                                    {item.submenu.map(sub => (
+                                                        <Dropdown.Link 
+                                                            key={sub.name}
+                                                            href={sub.href} 
+                                                            className={`flex items-center justify-between py-2.5 px-4 text-sm font-medium transition-colors ${
+                                                                sub.active 
+                                                                ? 'bg-brand-50 text-brand-700 font-semibold' 
+                                                                : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
+                                                            }`}
+                                                        >
+                                                            <span>{sub.name}</span>
+                                                            {sub.badge > 0 && (
+                                                                <span className={`px-2 py-0.5 text-[10px] font-bold text-white rounded-full ${sub.badgeColor || 'bg-brand-500'}`}>
+                                                                    {sub.badge}
+                                                                </span>
+                                                            )}
+                                                        </Dropdown.Link>
+                                                    ))}
+                                                </Dropdown.Content>
+                                            </Dropdown>
+                                        );
+                                    }
+
+                                    return (
+                                        <Link
+                                            key={item.name}
+                                            href={item.href}
+                                            className={`group flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium ${
+                                                item.active
+                                                ? 'bg-brand-50 text-brand-700'
+                                                : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
+                                            }`}
+                                        >
+                                            <Icon className={`h-5 w-5 ${item.active ? 'text-brand-600' : ''}`} strokeWidth={2} />
+                                            <span>{item.name}</span>
+                                            {item.badge > 0 && (
+                                                <span className={`px-2 py-0.5 text-[10px] font-bold text-white rounded-full ${item.badgeColor || 'bg-brand-500'} animate-pulse`}>
+                                                    {item.badge}
+                                                </span>
+                                            )}
+                                        </Link>
+                                    );
+                                })}
+                            </nav>
+                        </div>
+
+                        {/* Right Section - User Menu */}
+                        <div className="flex items-center space-x-3">
+                            {/* User Dropdown */}
+                            <Dropdown>
+                                <Dropdown.Trigger>
+                                    <button className="group flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-50 outline-none">
+                                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-600 text-white shadow-sm">
+                                            <User className="h-4 w-4" strokeWidth={2} />
                                         </div>
-                                    )}
-                                </div>
-                            );
-                        })}
-                    </nav>
-
-
-
-                    <div className="p-5 mt-auto border-t border-white/40 bg-gradient-to-t from-white/20 to-transparent">
-                        <div className="rounded-2xl bg-white p-4 border border-gray-100 shadow-sm group">
-                            <div className="flex items-center space-x-3">
-                                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-brand-100 to-purple-100 text-brand-700 border border-brand-200/50 shadow-inner">
-                                    <User className="h-5 w-5" strokeWidth={2.5} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="truncate text-sm font-bold text-gray-900 tracking-tight">{user.name}</p>
-                                    <div className="flex items-center space-x-1.5 mt-0.5">
-                                        <div className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]"></div>
-                                        <p className="truncate text-xs font-semibold text-gray-500 uppercase tracking-wider">{user.role || 'Staff'}</p>
+                                        <div className="hidden lg:block text-left">
+                                            <p className="text-sm font-semibold text-gray-900 leading-tight">{user.name}</p>
+                                            <div className="flex items-center space-x-1 mt-0.5">
+                                                <div className="h-1.5 w-1.5 rounded-full bg-emerald-400"></div>
+                                                <p className="text-[11px] font-bold text-gray-500 uppercase tracking-wider">{user.role || 'Staff'}</p>
+                                            </div>
+                                        </div>
+                                        <ChevronDown className="h-4 w-4 text-gray-400 hidden lg:block group-hover:text-gray-600 transition-colors" />
+                                    </button>
+                                </Dropdown.Trigger>
+                                <Dropdown.Content align="right" contentClasses="w-56 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden py-1">
+                                    <div className="px-4 py-3 border-b border-gray-100">
+                                        <p className="text-sm font-semibold text-gray-900">{user.name}</p>
+                                        <p className="text-xs text-gray-500 mt-0.5">{user.email}</p>
                                     </div>
-                                </div>
+                                    <Dropdown.Link href={route('profile.edit')} className="flex items-center py-2.5 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-brand-700 transition-colors">
+                                        <User className="h-5 w-5 mr-3 text-brand-600" strokeWidth={2} />
+                                        Profile Settings
+                                    </Dropdown.Link>
+                                    {user.role === 'admin' && (
+                                        <Dropdown.Link href={route('settings.index')} className="flex items-center py-2.5 px-4 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-brand-700 transition-colors">
+                                            <Settings className="h-5 w-5 mr-3 text-brand-600" strokeWidth={2} />
+                                            System Settings
+                                        </Dropdown.Link>
+                                    )}
+                                    <div className="h-px bg-gray-100 my-1"></div>
+                                    <Dropdown.Link href={route('logout')} method="post" as="button" className="flex items-center py-2.5 px-4 text-sm font-medium text-red-600 hover:bg-red-50 transition-colors w-full text-left">
+                                        <LogOut className="h-5 w-5 mr-3" strokeWidth={2} />
+                                        Sign Out
+                                    </Dropdown.Link>
+                                </Dropdown.Content>
+                            </Dropdown>
 
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <button className="flex h-9 w-9 items-center justify-center rounded-xl hover:bg-white transition-colors focus:ring-2 focus:ring-brand-500/20 outline-none">
-                                            <Settings className="h-4 w-4 text-gray-400" />
-                                        </button>
-                                    </Dropdown.Trigger>
-                                    <Dropdown.Content align="top-right" contentClasses="w-56 bg-white/95 backdrop-blur-2xl border border-white/80 shadow-2xl rounded-2xl overflow-hidden py-1">
-                                        <Dropdown.Link href={route('profile.edit')} className="flex items-center py-2.5 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                            Profile Settings
-                                        </Dropdown.Link>
-                                        <Dropdown.Link href={route('settings.index')} className="flex items-center py-2.5 px-4 text-sm font-semibold text-gray-700 hover:bg-brand-50 hover:text-brand-700 transition-colors">
-                                            Global Branding
-                                        </Dropdown.Link>
-                                        <div className="h-px bg-gray-100/80 my-1 mx-3"></div>
-                                        <Dropdown.Link href={route('logout')} method="post" as="button" className="flex items-center py-2.5 px-4 text-sm font-semibold text-red-600 hover:bg-red-50 transition-colors w-full text-left">
-                                            Sign Out
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
+                            {/* Mobile Menu Toggle */}
+                            <button 
+                                onClick={() => setIsMobileOpen(!isMobileOpen)} 
+                                className="lg:hidden p-2 text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+                            >
+                                {isMobileOpen ? <X className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
+                            </button>
                         </div>
                     </div>
-                </div>
-            </aside>
 
-            {/* Mobile Header */}
-            <div className={`lg:hidden fixed left-0 w-full z-40 bg-white border-b border-gray-100 flex h-16 items-center justify-between px-4 shadow-sm ${usePage().props.is_impersonating ? 'top-10' : 'top-0'}`}>
-                <button onClick={() => setIsMobileOpen(true)} className="p-2 -ml-2 text-gray-500 rounded-xl focus:outline-none hover:bg-gray-50">
-                    <MenuIcon className="h-6 w-6" />
-                </button>
-                <div className="flex items-center">
-                    <div className={`flex h-9 w-9 items-center justify-center rounded-xl overflow-hidden ${!settings?.site_logo ? 'bg-gradient-to-tr from-brand-600 to-purple-600 shadow-md' : ''}`}>
-                        <ApplicationLogo className={settings?.site_logo ? "w-full h-full object-cover" : "h-4 w-4 text-white"} />
-                    </div>
+                    {/* Mobile Navigation Menu */}
+                    {isMobileOpen && (
+                        <div className="lg:hidden border-t border-gray-200 py-2 bg-white">
+                            <nav className="space-y-1 px-2">
+                                {navItems.filter(item => {
+                                    if (user.role === 'super_admin') return item.superAdminOnly;
+                                    if (item.superAdminOnly) return false;
+                                    if (item.adminOnly && user.role !== 'admin') return false;
+                                    return true;
+                                }).map((item) => {
+                                    const Icon = item.icon;
+                                    return (
+                                        <div key={item.name}>
+                                            <Link
+                                                href={item.href}
+                                                onClick={() => !item.submenu && setIsMobileOpen(false)}
+                                                className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium ${
+                                                    item.active
+                                                    ? 'bg-brand-50 text-brand-700'
+                                                    : 'text-gray-700 hover:bg-gray-50 hover:text-brand-600'
+                                                }`}
+                                            >
+                                                <div className="flex items-center space-x-3">
+                                                    <Icon className={`h-5 w-5 ${item.active ? 'text-brand-600' : ''}`} strokeWidth={2.5} />
+                                                    <span>{item.name}</span>
+                                                </div>
+                                                {item.badge > 0 && (
+                                                    <span className={`px-2 py-0.5 text-[10px] font-bold text-white rounded-full ${item.badgeColor || 'bg-brand-500'}`}>
+                                                        {item.badge}
+                                                    </span>
+                                                )}
+                                            </Link>
+                                            {item.submenu && item.active && (
+                                                <div className="ml-4 mt-1 space-y-1 bg-gray-50 rounded-lg p-1.5">
+                                                    {item.submenu.map(sub => (
+                                                        <Link
+                                                            key={sub.name}
+                                                            href={sub.href}
+                                                            onClick={() => setIsMobileOpen(false)}
+                                                            className={`flex items-center justify-between px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                                                                sub.active 
+                                                                ? 'bg-white text-brand-700 font-semibold' 
+                                                                : 'text-gray-700 hover:bg-white hover:text-brand-600'
+                                                            }`}
+                                                        >
+                                                            <span>{sub.name}</span>
+                                                            {sub.badge > 0 && (
+                                                                <span className={`px-2 py-0.5 text-[10px] font-bold text-white rounded-full ${sub.badgeColor || 'bg-brand-500'}`}>
+                                                                    {sub.badge}
+                                                                </span>
+                                                            )}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    );
+                                })}
+                            </nav>
+                        </div>
+                    )}
                 </div>
-            </div>
+            </header>
 
             {/* Main Content */}
-            <main className={`flex-1 flex flex-col min-w-0 pb-24 lg:pb-0 bg-gray-50 ${usePage().props.is_impersonating ? 'lg:pt-10 pt-24' : 'lg:pt-0 pt-16'}`}>
-                <div className="w-full mx-auto flex-1 flex flex-col p-6 sm:p-8 lg:p-10">
+            <main className="flex-1">
+                <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
                     {children}
                 </div>
             </main>
 
-            {/* Mobile Bottom Navigation (Classic Floating Dock) */}
-            {!isMobileOpen && (
-                <div className="lg:hidden fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-sm z-50 bg-white border border-gray-100 shadow-lg rounded-3xl px-3 py-2">
-                    <div className="flex items-center justify-between">
-                        {mobileNavItems.filter(item => {
-                            if (item.adminOnly && user.role !== 'admin') return false;
-                            return true;
-                        }).map((item) => {
-                            const Icon = item.icon;
-                            const isActive = item.active;
-                            return (
-                                <Link 
-                                    key={item.name} 
-                                    href={item.href}
-                                    className="relative flex flex-col items-center justify-center h-14 w-16 rounded-2xl outline-none group"
-                                >
-                                    {isActive && (
-                                        <div className="absolute inset-0 bg-brand-50 border border-brand-100 rounded-2xl -z-10"></div>
-                                    )}
-                                    <Icon className={`mb-0.5 ${isActive ? 'w-5 h-5 text-brand-600 scale-110' : 'w-5 h-5 text-gray-400'}`} strokeWidth={isActive ? 2.5 : 2} />
-                                    <span className={`text-[10px] font-bold tracking-tight ${isActive ? 'text-brand-700' : 'text-gray-400'}`}>
-                                        {item.name}
-                                    </span>
-                                </Link>
-                            );
-                        })}
-                    </div>
+            {/* Mobile Bottom Navigation */}
+            <div className="lg:hidden fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-sm z-50 bg-white border border-gray-200 shadow-xl rounded-2xl px-2 py-2">
+                <div className="flex items-center justify-between">
+                    {mobileNavItems.filter(item => {
+                        if (item.adminOnly && user.role !== 'admin') return false;
+                        return true;
+                    }).map((item) => {
+                        const Icon = item.icon;
+                        const isActive = item.active;
+                        return (
+                            <Link 
+                                key={item.name} 
+                                href={item.href}
+                                className="relative flex flex-col items-center justify-center h-14 w-14 rounded-lg outline-none group transition-all"
+                            >
+                                {isActive && (
+                                    <div className="absolute inset-0 bg-brand-50 rounded-lg -z-10"></div>
+                                )}
+                                <Icon className={`mb-0.5 transition-all ${isActive ? 'w-6 h-6 text-brand-600' : 'w-5 h-5 text-gray-500'}`} strokeWidth={2.5} />
+                                <span className={`text-[9px] font-semibold transition-colors ${isActive ? 'text-brand-700' : 'text-gray-500'}`}>
+                                    {item.name}
+                                </span>
+                            </Link>
+                        );
+                    })}
                 </div>
-            )}
-
-
-            {/* Mobile Overlay */}
-            {isMobileOpen && (
-                <div
-                    className="fixed inset-0 z-40 bg-gray-900/30 lg:hidden"
-                    onClick={() => setIsMobileOpen(false)}
-                />
-            )}
+            </div>
         </div>
     );
 }
-
-import ApplicationLogo from '@/Components/ApplicationLogo';
